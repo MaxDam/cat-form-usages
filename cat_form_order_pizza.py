@@ -18,8 +18,7 @@ class PizzaOrder(BaseModel):
         if pizza_type in [None, ""]:
             return
 
-        pizza_types = list(menu.keys())
-
+        pizza_types = list(menu)
         if pizza_type not in pizza_types:
             raise ValueError(f"{pizza_type} is not present in the menù")
         
@@ -37,24 +36,49 @@ class PizzaOrder(BaseModel):
                 "updatedJson": ["Margherita", "Via Roma 1", None]
             }
         ]
+    
+    # Prompt prefix
+    @classmethod
+    def prompt_prefix(cls):
+        return """you have to behave like a professional 
+        waiter taking orders for a pizzeria, 
+        always you have to appear cordial but friendly, 
+        you must use informal language with the customer;
+        translating everything in {language} language.
+        """
+
+    # Action
+    @classmethod
+    def execute_action(cls, model):
+        result = "<h3>PIZZA CHALLENGE - ORDER COMPLETED<h3><br>" 
+        result += "<table border=0>"
+        result += "<tr>"
+        result += "   <td>Pizza Type</td>"
+        result += f"  <td>{model.pizza_type}</td>"
+        result += "</tr>"
+        result += "<tr>"
+        result += "   <td>Address</td>"
+        result += f"  <td>{model.address}</td>"
+        result += "</tr>"
+        result += "<tr>"
+        result += "   <td>Phone Number</td>"
+        result += f"  <td>{model.phone}</td>"
+        result += "</tr>"
+        result += "</table>"
+        result += "<br>"                                                                                                     
+        result += "Thanks for your order.. your pizza is on its way!"
+        result += "<br><br>"
+        result += f"<img style='width:400px' src='https://maxdam.github.io/cat-pizza-challenge/img/order/pizza{random.randint(0, 6)}.jpg'>"
+        return result
+
 
 # Hook set model  
 @hook
-def cform_set_model(model, cat):
+def cform_set_model(models, cat):
     settings = cat.mad_hatter.get_plugin().load_settings()
     if settings['order_pizza'] is True:
-        return PizzaOrder()
-    return model
-
-# Hook prompt swow summary
-@hook
-def cform_show_summary(prompt, cat):
-    return prompt
-
-# Hook prompt ask missing information
-@hook
-def cform_ask_missing_information(prompt, cat):
-    return prompt
+        models.append(PizzaOrder())
+    return models
 
 # Order pizza start intent
 @tool(return_direct=True)
@@ -82,30 +106,6 @@ def stop_order_pizza_intent(input, cat):
         cform.stop_conversation()    
     return
 
-# Hook for execute final action
-@hook
-def cform_execute_action(model, cat):
-    if "PizzaOrder" in cat.working_memory.keys():
-        result = "<h3>PIZZA CHALLENGE - ORDER COMPLETED<h3><br>" 
-        result += "<table border=0>"
-        result += "<tr>"
-        result += "   <td>Pizza Type</td>"
-        result += f"  <td>{model.pizza_type}</td>"
-        result += "</tr>"
-        result += "<tr>"
-        result += "   <td>Address</td>"
-        result += f"  <td>{model.address}</td>"
-        result += "</tr>"
-        result += "<tr>"
-        result += "   <td>Phone Number</td>"
-        result += f"  <td>{model.phone}</td>"
-        result += "</tr>"
-        result += "</table>"
-        result += "<br>"                                                                                                     
-        result += "Thanks for your order.. your pizza is on its way!"
-        result += "<br><br>"
-        result += f"<img style='width:400px' src='https://maxdam.github.io/cat-pizza-challenge/img/order/pizza{random.randint(0, 6)}.jpg'>"
-        return result
 
 # Get pizza menu
 @tool()
@@ -117,24 +117,20 @@ def ask_menu(input, cat):
 
     log.critical("INTENT ORDER PIZZA MENU")
     # if the intent is active..
-    if KEY in cat.working_memory.keys():
+    if "PizzaOrder" in cat.working_memory.keys():
         # return menu
         response = "The available pizzas are the following:"
-        for pizza, ingredients in menu.items():
-            response += f"\n - {pizza} with the following ingredients: {ingredients}"
+        for pizza in menu:
+            response += f"\n - {pizza}"
         return response
 
     return input
 
-menu = {
-    "Margherita": "Pomodoro, mozzarella fresca, basilico.",
-    "Peperoni": "Pomodoro, mozzarella, peperoni.",
-    "Romana": "Pomodoro, mozzarella, prosciutto.",
-    "Quattro Formaggi": "Gorgonzola, mozzarella, parmigiano, taleggio.",
-    "Capricciosa": "Pomodoro, mozzarella, prosciutto, funghi, carciofi, olive.",
-    "Vegetariana": "Pomodoro, mozzarella, peperoni, cipolla, olive, melanzane.",
-    "Bufalina": "Pomodoro, mozzarella di bufala, pomodorini, basilico.",
-    "Diavola": "Pomodoro, mozzarella, salame piccante, peperoncino.",
-    "Pescatora": "Pomodoro, mozzarella, frutti di mare (cozze, vongole, gamberi).",
-    "Rucola": "Pomodoro, mozzarella, prosciutto crudo, rucola, scaglie di parmigiano."
-}
+menu = [
+    "Margherita",
+    "Romana",
+    "Quattro Formaggi",
+    "Capricciosa",
+    "Bufalina",
+    "Diavola"
+]

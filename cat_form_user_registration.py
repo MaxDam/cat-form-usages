@@ -25,14 +25,39 @@ class UserRegistration(BaseModel):
                 "updatedJson": ["John", "Smith", None]
             }
         ]
+    
+    # Action
+    @classmethod
+    def execute_action(cls, model):
+        result = "<h3>You have registered<h3><br>" 
+        result += "<table border=0>"
+        result += "<tr>"
+        result += "   <td>Name</td>"
+        result += f"  <td>{model.name}</td>"
+        result += "</tr>"
+        result += "<tr>"
+        result += "   <td>Surname</td>"
+        result += f"  <td>{model.surname}</td>"
+        result += "</tr>"
+        result += "<tr>"
+        result += "   <td>Company</td>"
+        result += f"  <td>{model.company}</td>"
+        result += "</tr>"
+        result += "<tr>"
+        result += "   <td>Email</td>"
+        result += f"  <td>{model.email}</td>"
+        result += "</tr>"
+        result += "</table>"
+        return result
+
 
 # Hook set model  
 @hook
-def cform_set_model(model, cat):
+def cform_set_model(models, cat):
     settings = cat.mad_hatter.get_plugin().load_settings()
     if settings['user_registration'] is True:
-        return UserRegistration()
-    return model
+        models.append(UserRegistration())
+    return models
 
 # Start intent
 @tool(return_direct=True)
@@ -56,28 +81,4 @@ def stop_register_intent(input, cat):
         cform = cat.working_memory["UserRegistration"]
         cform.stop_conversation()    
     return
-
-# Hook Execute action
-@hook
-def cform_execute_action(model, cat):
-    if "UserRegistration" in cat.working_memory.keys():
-        result = "<h3>You have registered<h3><br>" 
-        result += "<table border=0>"
-        result += "<tr>"
-        result += "   <td>Name</td>"
-        result += f"  <td>{model.name}</td>"
-        result += "</tr>"
-        result += "<tr>"
-        result += "   <td>Surname</td>"
-        result += f"  <td>{model.surname}</td>"
-        result += "</tr>"
-        result += "<tr>"
-        result += "   <td>Company</td>"
-        result += f"  <td>{model.company}</td>"
-        result += "</tr>"
-        result += "<tr>"
-        result += "   <td>Email</td>"
-        result += f"  <td>{model.email}</td>"
-        result += "</tr>"
-        result += "</table>"
-        return result
+    
