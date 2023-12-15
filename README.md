@@ -33,27 +33,27 @@ class MyModel(BaseModel):
             }
 			#...
 		]
-		
+	
 	@classmethod
     def execute_action(cls, model):
 		# execute action
 		return # action output
-		
+	
 	@classmethod
     def prompt_prefix(cls, cat, prompt):
 		# manipulate prompt
         return prompt
-		
+	
 	@classmethod
     def get_ask_missing_information_prompt(cls, cat, prompt):
         # manipulate prompt
         return prompt
-		
+	
 	@classmethod
     def get_show_summary_prompt(cls, cat, prompt):
         # manipulate prompt
         return prompt
-		
+	
 	@classmethod
     def get_check_confirm_prompt(cls, cat, prompt):
         # manipulate prompt
