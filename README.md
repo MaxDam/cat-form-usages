@@ -1,6 +1,6 @@
-# Cat Form Order Pizza
+# Cat Form Usage
 
-This plugin hooks into the CatForm plugin functionality to manage a pizza order
+This plugin connects to the CatForm plugin functionality to manage a pizza order or guide the user through a registration
 
 Based on this plugin:
 https://github.com/MaxDam/cat-form
@@ -11,42 +11,64 @@ https://github.com/MaxDam/cat-form
 
 ## Usage
 
-<pre><code>
-'''
-Prepare the form with field and special class methods
-'''
+### 1) Prepare the pydantic form with field and special class methods
+```python 
 class MyModel(BaseModel):
     field1: str | None = None
     field2: str | None = None
+	#...
     
     @classmethod
     def get_prompt_examples(cls):
-        return [ <json examples> ]
-		
-	@classmethod
-    def prompt_prefix(cls):
-        return "<prompt>
+        return [ 
+			{
+				"sentence":    "# sentence",
+                "json":        [# initial attributes],
+                "updatedJson": [# updated attributes]
+            },
+            {
+                "sentence":    "# sentence",
+                "json":        [# initial attributes],
+                "updatedJson": [# updated attributes]
+            }
+			#...
+		]
 		
 	@classmethod
     def execute_action(cls, model):
 		# execute action
-		return "<action output>"
+		return # action output
 		
-</code></pre>
+	@classmethod
+    def prompt_prefix(cls, cat, prompt):
+		# manipulate prompt
+        return prompt
+		
+	@classmethod
+    def get_ask_missing_information_prompt(cls, cat, prompt):
+        # manipulate prompt
+        return prompt
+		
+	@classmethod
+    def get_show_summary_prompt(cls, cat, prompt):
+        # manipulate prompt
+        return prompt
+		
+	@classmethod
+    def get_check_confirm_prompt(cls, cat, prompt):
+        # manipulate prompt
+        return prompt
+```		
 
-<pre><code>
-'''
-This hook is used to set the module instance
-'''
+### 2) Implement hook to set the module instance
+```python 
 @hook
 def cform_set_model(models, cat):
     return models.append(MyModel())
-</code></pre>
+```
 
-<pre><code>
-'''
-Intent start
-'''
+### 3) Implement tool intent start
+```python 
 @tool(return_direct=True)
 def intent_start(model, cat):
 	''' <docString> '''
@@ -54,12 +76,10 @@ def intent_start(model, cat):
     if "MyModel" in cat.working_memory.keys():
         cform = cat.working_memory["MyModel"]
         return cform.start_conversation()
-</code></pre>
+```
 
-<pre><code>
-'''
-Intent stop
-'''
+### 4) Implement tool intent stop
+```python 
 @tool(return_direct=True)
 def intent_stop(model, cat):
 	''' <docString> '''
@@ -68,4 +88,4 @@ def intent_stop(model, cat):
         cform = cat.working_memory["MyModel"]
         cform.stop_conversation()    
     return
-</code></pre>
+```
