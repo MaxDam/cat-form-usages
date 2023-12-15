@@ -11,6 +11,7 @@ class UserRegistration(BaseModel):
     company: str | None = None
     email:   str | None = None
     
+    # CFomr Hook Get Prompt Examples
     @classmethod
     def get_prompt_examples(cls):
         return [
@@ -26,7 +27,7 @@ class UserRegistration(BaseModel):
             }
         ]
     
-    # Action
+    # CFomr Hook Action
     @classmethod
     def execute_action(cls, model):
         result = "<h3>You have registered<h3><br>" 

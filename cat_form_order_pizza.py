@@ -22,6 +22,7 @@ class PizzaOrder(BaseModel):
         if pizza_type not in pizza_types:
             raise ValueError(f"{pizza_type} is not present in the menù")
         
+    # CFomr Hook Get Prompt Examples
     @classmethod
     def get_prompt_examples(cls):
         return [
@@ -37,17 +38,17 @@ class PizzaOrder(BaseModel):
             }
         ]
     
-    # Prompt prefix
+    # CFomr Hook Prompt Prefix
     @classmethod
-    def prompt_prefix(cls):
-        return """you have to behave like a professional 
+    def prompt_prefix(cls, cat, prompt):
+        prompt = """you have to behave like a professional 
         waiter taking orders for a pizzeria, 
         always you have to appear cordial but friendly, 
         you must use informal language with the customer;
-        translating everything in {language} language.
-        """
+        translating everything in {language} language."""
+        return prompt
 
-    # Action
+    # CFomr Hook Action
     @classmethod
     def execute_action(cls, model):
         result = "<h3>PIZZA CHALLENGE - ORDER COMPLETED<h3><br>" 
@@ -107,6 +108,15 @@ def stop_order_pizza_intent(input, cat):
     return
 
 
+menu = [
+    "Margherita",
+    "Romana",
+    "Quattro Formaggi",
+    "Capricciosa",
+    "Bufalina",
+    "Diavola"
+]
+
 # Get pizza menu
 @tool()
 def ask_menu(input, cat):
@@ -125,12 +135,3 @@ def ask_menu(input, cat):
         return response
 
     return input
-
-menu = [
-    "Margherita",
-    "Romana",
-    "Quattro Formaggi",
-    "Capricciosa",
-    "Bufalina",
-    "Diavola"
-]
