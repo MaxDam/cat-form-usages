@@ -11,9 +11,9 @@ class UserRegistration(BaseModel):
     company: str | None = None
     email:   str | None = None
     
-    # CFomr Hook Get Prompt Examples
+    # CForm Hook Get Prompt Examples
     @classmethod
-    def get_prompt_examples(cls):
+    def get_prompt_examples(cls, cat):
         return [
             {
                 "sentence": "Hello, I would register me for this service",
@@ -27,9 +27,21 @@ class UserRegistration(BaseModel):
             }
         ]
     
-    # CFomr Hook Action
+    # CForm Hook Prompt Prefix
     @classmethod
-    def execute_action(cls, model):
+    def prompt_prefix(cls, prompt, cat):
+        prompt = "you are helping a user to register for a service, you must behave like a professional assistant\
+                who follows the user for this operation. always answer in Italian."
+        return prompt
+    
+    # CForm Hook Set language
+    @classmethod
+    def set_language(cls, language, cat):
+        return "Italian"
+    
+    # CForm Hook Action
+    @classmethod
+    def execute_action(cls, model, cat):
         result = "<h3>You have registered<h3><br>" 
         result += "<table border=0>"
         result += "<tr>"

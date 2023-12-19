@@ -22,9 +22,9 @@ class PizzaOrder(BaseModel):
         if pizza_type not in pizza_types:
             raise ValueError(f"{pizza_type} is not present in the menù")
         
-    # CFomr Hook Get Prompt Examples
+    # CForm Hook Get Prompt Examples
     @classmethod
-    def get_prompt_examples(cls):
+    def get_prompt_examples(cls, cat):
         return [
             {
                 "sentence": "I want to order a pizza",
@@ -38,19 +38,22 @@ class PizzaOrder(BaseModel):
             }
         ]
     
-    # CFomr Hook Prompt Prefix
+    # CForm Hook Prompt Prefix
     @classmethod
-    def prompt_prefix(cls, cat, prompt):
-        prompt = """you have to behave like a professional 
-        waiter taking orders for a pizzeria, 
-        always you have to appear cordial but friendly, 
-        you must use informal language with the customer;
-        translating everything in {language} language."""
+    def prompt_prefix(cls, prompt, cat):
+        prompt = "you have to behave like a professional waiter taking orders in a pizzeria; \
+            respond briefly and in a cordial but friendly manner, use informal language with the customer; \
+            translating everything into Italian."
         return prompt
-
-    # CFomr Hook Action
+    
+    # CForm Hook Set language
     @classmethod
-    def execute_action(cls, model):
+    def set_language(cls, language, cat):
+        return "Italian"
+
+    # CForm Hook Action
+    @classmethod
+    def execute_action(cls, model, cat):
         result = "<h3>PIZZA CHALLENGE - ORDER COMPLETED<h3><br>" 
         result += "<table border=0>"
         result += "<tr>"
